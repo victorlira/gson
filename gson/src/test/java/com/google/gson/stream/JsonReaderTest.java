@@ -507,7 +507,7 @@ public final class JsonReaderTest {
     try {
       reader.nextString();
       fail();
-    } catch (NumberFormatException expected) {
+    } catch (MalformedJsonException expected) {
     }
   }
 
