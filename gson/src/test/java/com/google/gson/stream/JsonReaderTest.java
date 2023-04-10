@@ -35,6 +35,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import com.google.gson.Strictness;
+import com.google.gson.stream.JsonToken;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -1018,8 +1019,8 @@ public final class JsonReaderTest {
     try {
       JsonReader reader = new JsonReader(reader("{\"a\":true}"));
       reader.beginObject();
-      reader.nextName();
-      reader.peek();
+      String unused1 = reader.nextName();
+      JsonToken unused2 = reader.peek();
       reader.close();
       reader.nextBoolean();
       fail();
@@ -1032,13 +1033,13 @@ public final class JsonReaderTest {
     JsonReader reader = new JsonReader(reader("{\"a\":true}"));
     reader.beginObject();
     try {
-      reader.nextString();
+      String unused = reader.nextString();
       fail();
     } catch (IllegalStateException expected) {
     }
     assertThat(reader.nextName()).isEqualTo("a");
     try {
-      reader.nextName();
+      String unused = reader.nextName();
       fail();
     } catch (IllegalStateException expected) {
     }
@@ -1397,8 +1398,8 @@ public final class JsonReaderTest {
     JsonReader reader = new JsonReader(reader("[true;true]"));
     reader.beginArray();
     try {
-      reader.nextBoolean();
-      reader.nextBoolean();
+      boolean unused1 = reader.nextBoolean();
+      boolean unused2 = reader.nextBoolean();
       fail();
     } catch (IOException expected) {
     }
@@ -1431,8 +1432,8 @@ public final class JsonReaderTest {
     reader.beginObject();
     assertThat(reader.nextName()).isEqualTo("a");
     try {
-      reader.nextBoolean();
-      reader.nextName();
+      boolean unused1 = reader.nextBoolean();
+      String unused2 = reader.nextName();
       fail();
     } catch (IOException expected) {
     }
@@ -1764,9 +1765,9 @@ public final class JsonReaderTest {
     JsonReader reader1 = new JsonReader(reader(json));
     reader1.setLenient(true);
     reader1.beginArray();
-    reader1.nextString();
+    String unused1 = reader1.nextString();
     try {
-      reader1.peek();
+      JsonToken unused2 = reader1.peek();
       fail();
     } catch (IOException expected) {
       assertThat(expected.getMessage()).isEqualTo(message);
@@ -1778,7 +1779,7 @@ public final class JsonReaderTest {
     reader2.beginArray();
     reader2.skipValue();
     try {
-      reader2.peek();
+      JsonToken unused3 = reader2.peek();
       fail();
     } catch (IOException expected) {
       assertThat(expected.getMessage()).isEqualTo(message);
@@ -1789,14 +1790,14 @@ public final class JsonReaderTest {
   public void testFailWithPositionDeepPath() throws IOException {
     JsonReader reader = new JsonReader(reader("[1,{\"a\":[2,3,}"));
     reader.beginArray();
-    reader.nextInt();
+    int unused1 = reader.nextInt();
     reader.beginObject();
-    reader.nextName();
+    String unused2 = reader.nextName();
     reader.beginArray();
-    reader.nextInt();
-    reader.nextInt();
+    int unused3 = reader.nextInt();
+    int unused4 = reader.nextInt();
     try {
-      reader.peek();
+      JsonToken unused5 = reader.peek();
       fail();
     } catch (IOException expected) {
       assertThat(expected.getMessage()).isEqualTo("Expected value at line 1 column 14 path $[1].a[2]");

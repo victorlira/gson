@@ -24,6 +24,7 @@ import static com.google.gson.stream.JsonScope.NONEMPTY_ARRAY;
 import static com.google.gson.stream.JsonScope.NONEMPTY_DOCUMENT;
 import static com.google.gson.stream.JsonScope.NONEMPTY_OBJECT;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.gson.FormattingStyle;
 import com.google.gson.Strictness;
 import java.io.Closeable;
@@ -356,6 +357,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter beginArray() throws IOException {
     writeDeferredName();
     return open(EMPTY_ARRAY, '[');
@@ -366,6 +368,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter endArray() throws IOException {
     return close(EMPTY_ARRAY, NONEMPTY_ARRAY, ']');
   }
@@ -376,6 +379,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter beginObject() throws IOException {
     writeDeferredName();
     return open(EMPTY_OBJECT, '{');
@@ -386,6 +390,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter endObject() throws IOException {
     return close(EMPTY_OBJECT, NONEMPTY_OBJECT, '}');
   }
@@ -394,6 +399,7 @@ public class JsonWriter implements Closeable, Flushable {
    * Enters a new scope by appending any necessary whitespace and the given
    * bracket.
    */
+  @CanIgnoreReturnValue
   private JsonWriter open(int empty, char openBracket) throws IOException {
     beforeValue();
     push(empty);
@@ -405,6 +411,7 @@ public class JsonWriter implements Closeable, Flushable {
    * Closes the current scope by appending any necessary whitespace and the
    * given bracket.
    */
+  @CanIgnoreReturnValue
   private JsonWriter close(int empty, int nonempty, char closeBracket)
       throws IOException {
     int context = peek();
@@ -453,6 +460,7 @@ public class JsonWriter implements Closeable, Flushable {
    * @param name the name of the forthcoming value. May not be null.
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter name(String name) throws IOException {
     Objects.requireNonNull(name, "name == null");
     if (deferredName != null) {
@@ -479,6 +487,7 @@ public class JsonWriter implements Closeable, Flushable {
    * @param value the literal string value, or null to encode a null literal.
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(String value) throws IOException {
     if (value == null) {
       return nullValue();
@@ -500,6 +509,7 @@ public class JsonWriter implements Closeable, Flushable {
    *    writing raw JSON values.
    * @since 2.4
    */
+  @CanIgnoreReturnValue
   public JsonWriter jsonValue(String value) throws IOException {
     if (value == null) {
       return nullValue();
@@ -515,6 +525,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter nullValue() throws IOException {
     if (deferredName != null) {
       if (serializeNulls) {
@@ -534,6 +545,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(boolean value) throws IOException {
     writeDeferredName();
     beforeValue();
@@ -547,6 +559,7 @@ public class JsonWriter implements Closeable, Flushable {
    * @return this writer.
    * @since 2.7
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(Boolean value) throws IOException {
     if (value == null) {
       return nullValue();
@@ -568,6 +581,7 @@ public class JsonWriter implements Closeable, Flushable {
    *     #setLenient(boolean) lenient}.
    * @since 2.9.1
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(float value) throws IOException {
     writeDeferredName();
     if (strictness != Strictness.LENIENT && (Float.isNaN(value) || Float.isInfinite(value))) {
@@ -587,6 +601,7 @@ public class JsonWriter implements Closeable, Flushable {
    * @throws IllegalArgumentException if the value is NaN or Infinity and this writer is
    *     not {@link #setLenient(boolean) lenient}.
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(double value) throws IOException {
     writeDeferredName();
     if (strictness != Strictness.LENIENT && (Double.isNaN(value) || Double.isInfinite(value))) {
@@ -602,6 +617,7 @@ public class JsonWriter implements Closeable, Flushable {
    *
    * @return this writer.
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(long value) throws IOException {
     writeDeferredName();
     beforeValue();
@@ -631,6 +647,7 @@ public class JsonWriter implements Closeable, Flushable {
    *     not {@link #setLenient(boolean) lenient}; or if the {@code toString()} result is not a
    *     valid JSON number.
    */
+  @CanIgnoreReturnValue
   public JsonWriter value(Number value) throws IOException {
     if (value == null) {
       return nullValue();
