@@ -105,7 +105,7 @@ import java.util.concurrent.atomic.AtomicLongArray;
  * <p>See the <a href="https://github.com/google/gson/blob/master/UserGuide.md">Gson User Guide</a>
  * for a more complete set of examples.</p>
  *
- * <h2>JSON Strictness handling</h2>
+ * <h2 id="default-lenient">JSON Strictness handling</h2>
  * For legacy reasons most of the {@code Gson} methods allow JSON data which does not
  * comply with the JSON specification when the strictness is set to {@code null} (the default value).
  * To specify the {@linkplain Strictness strictness} of a {@code Gson} instance, you should set it through

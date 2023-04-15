@@ -18,6 +18,7 @@ package com.google.gson.stream;
 
 import com.google.gson.Strictness;
 import com.google.gson.internal.JsonReaderInternalAccess;
+import com.google.gson.internal.TroubleshootingGuide;
 import com.google.gson.internal.bind.JsonTreeReader;
 import java.io.Closeable;
 import java.io.EOFException;
@@ -403,7 +404,7 @@ public class JsonReader implements Closeable {
       pathIndices[stackSize - 1] = 0;
       peeked = PEEKED_NONE;
     } else {
-      throw new IllegalStateException("Expected BEGIN_ARRAY but was " + peek() + locationString());
+      throw unexpectedTokenError("BEGIN_ARRAY");
     }
   }
 
@@ -421,7 +422,7 @@ public class JsonReader implements Closeable {
       pathIndices[stackSize - 1]++;
       peeked = PEEKED_NONE;
     } else {
-      throw new IllegalStateException("Expected END_ARRAY but was " + peek() + locationString());
+      throw unexpectedTokenError("END_ARRAY");
     }
   }
 
@@ -438,7 +439,7 @@ public class JsonReader implements Closeable {
       push(JsonScope.EMPTY_OBJECT);
       peeked = PEEKED_NONE;
     } else {
-      throw new IllegalStateException("Expected BEGIN_OBJECT but was " + peek() + locationString());
+      throw unexpectedTokenError("BEGIN_OBJECT");
     }
   }
 
@@ -457,7 +458,7 @@ public class JsonReader implements Closeable {
       pathIndices[stackSize - 1]++;
       peeked = PEEKED_NONE;
     } else {
-      throw new IllegalStateException("Expected END_OBJECT but was " + peek() + locationString());
+      throw unexpectedTokenError("END_OBJECT");
     }
   }
 
@@ -851,7 +852,7 @@ public class JsonReader implements Closeable {
     } else if (p == PEEKED_DOUBLE_QUOTED_NAME) {
       result = nextQuotedValue('"');
     } else {
-      throw new IllegalStateException("Expected a name but was " + peek() + locationString());
+      throw unexpectedTokenError("a name");
     }
     peeked = PEEKED_NONE;
     pathNames[stackSize - 1] = result;
@@ -887,7 +888,7 @@ public class JsonReader implements Closeable {
       result = new String(buffer, pos, peekedNumberLength);
       pos += peekedNumberLength;
     } else {
-      throw new IllegalStateException("Expected a string but was " + peek() + locationString());
+      throw unexpectedTokenError("a string");
     }
     peeked = PEEKED_NONE;
     pathIndices[stackSize - 1]++;
@@ -915,7 +916,7 @@ public class JsonReader implements Closeable {
       pathIndices[stackSize - 1]++;
       return false;
     }
-    throw new IllegalStateException("Expected a boolean but was " + peek() + locationString());
+    throw unexpectedTokenError("a boolean");
   }
 
   /**
@@ -934,7 +935,7 @@ public class JsonReader implements Closeable {
       peeked = PEEKED_NONE;
       pathIndices[stackSize - 1]++;
     } else {
-      throw new IllegalStateException("Expected null but was " + peek() + locationString());
+      throw unexpectedTokenError("null");
     }
   }
 
@@ -969,14 +970,14 @@ public class JsonReader implements Closeable {
     } else if (p == PEEKED_UNQUOTED) {
       peekedString = nextUnquotedValue();
     } else if (p != PEEKED_BUFFERED) {
-      throw new IllegalStateException("Expected a double but was " + peek() + locationString());
+      throw unexpectedTokenError("a double");
     }
 
     peeked = PEEKED_BUFFERED;
     double result = Double.parseDouble(peekedString); // don't catch this NumberFormatException.
     if (strictness != Strictness.LENIENT && (Double.isNaN(result) || Double.isInfinite(result))) {
-      throw new MalformedJsonException(
-          "JSON forbids NaN and infinities: " + result + locationString());
+      throw syntaxError(
+          "JSON forbids NaN and infinities: " + result);
     }
     peekedString = null;
     peeked = PEEKED_NONE;
@@ -1024,7 +1025,7 @@ public class JsonReader implements Closeable {
         // Fall back to parse as a double below.
       }
     } else {
-      throw new IllegalStateException("Expected a long but was " + peek() + locationString());
+      throw unexpectedTokenError("a long");
     }
 
     peeked = PEEKED_BUFFERED;
@@ -1265,7 +1266,7 @@ public class JsonReader implements Closeable {
         // Fall back to parse as a double below.
       }
     } else {
-      throw new IllegalStateException("Expected an int but was " + peek() + locationString());
+      throw unexpectedTokenError("an int");
     }
 
     peeked = PEEKED_BUFFERED;
@@ -1641,10 +1642,10 @@ public class JsonReader implements Closeable {
   /**
    * Unescapes the character identified by the character or characters that
    * immediately follow a backslash. The backslash '\' should have already
-   * been read. This supports both unicode escapes "u000A" and two-character
+   * been read. This supports both Unicode escapes "u000A" and two-character
    * escapes "\n".
    *
-   * @throws MalformedJsonException if any unicode escape sequences are
+   * @throws MalformedJsonException if any Unicode escape sequences are
    *     malformed.
    */
   @SuppressWarnings("fallthrough")
@@ -1671,7 +1672,7 @@ public class JsonReader implements Closeable {
         } else if (c >= 'A' && c <= 'F') {
           result += (c - 'A' + 10);
         } else {
-          throw new MalformedJsonException("\\u" + new String(buffer, pos, 4));
+          throw syntaxError("Malformed Unicode escape \\u" + new String(buffer, pos, 4));
         }
       }
       pos += 4;
@@ -1719,7 +1720,16 @@ public class JsonReader implements Closeable {
    * with this reader's content.
    */
   private IOException syntaxError(String message) throws IOException {
-    throw new MalformedJsonException(message + locationString());
+    throw new MalformedJsonException(message + locationString()
+      + "\nSee " + TroubleshootingGuide.createUrl("malformed-json"));
+  }
+
+  private IllegalStateException unexpectedTokenError(String expected) throws IOException {
+    JsonToken peeked = peek();
+    String troubleshootingId = peeked == JsonToken.NULL
+        ? "adapter-not-null-safe" : "unexpected-json-structure";
+    return new IllegalStateException("Expected " + expected + " but was " + peek() + locationString()
+        + "\nSee " + TroubleshootingGuide.createUrl(troubleshootingId));
   }
 
   /**
@@ -1762,8 +1772,7 @@ public class JsonReader implements Closeable {
         } else if (p == PEEKED_UNQUOTED_NAME) {
           reader.peeked = PEEKED_UNQUOTED;
         } else {
-          throw new IllegalStateException(
-              "Expected a name but was " + reader.peek() + reader.locationString());
+          throw reader.unexpectedTokenError("a name");
         }
       }
     };
