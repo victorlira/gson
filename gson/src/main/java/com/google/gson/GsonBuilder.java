@@ -535,6 +535,7 @@ public final class GsonBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
+  @Deprecated
   public GsonBuilder setLenient() {
     strictness = Strictness.LENIENT;
     return this;

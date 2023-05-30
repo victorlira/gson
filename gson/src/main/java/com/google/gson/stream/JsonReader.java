@@ -976,8 +976,7 @@ public class JsonReader implements Closeable {
     peeked = PEEKED_BUFFERED;
     double result = Double.parseDouble(peekedString); // don't catch this NumberFormatException.
     if (strictness != Strictness.LENIENT && (Double.isNaN(result) || Double.isInfinite(result))) {
-      throw syntaxError(
-          "JSON forbids NaN and infinities: " + result);
+      throw syntaxError("JSON forbids NaN and infinities: " + result);
     }
     peekedString = null;
     peeked = PEEKED_NONE;
