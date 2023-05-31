@@ -236,6 +236,7 @@ public class GsonBuilderTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSetLenient() throws IOException {
     GsonBuilder builder = new GsonBuilder();
     builder.setLenient();

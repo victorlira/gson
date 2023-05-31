@@ -97,8 +97,8 @@ public final class JsonParser {
    */
   public static JsonElement parseReader(JsonReader reader)
       throws JsonIOException, JsonSyntaxException {
-    boolean lenient = reader.isLenient();
-    reader.setLenient(true);
+    Strictness strictness = reader.getStrictness();
+    reader.setStrictness(Strictness.LENIENT);
     try {
       return Streams.parse(reader);
     } catch (StackOverflowError e) {
@@ -106,7 +106,7 @@ public final class JsonParser {
     } catch (OutOfMemoryError e) {
       throw new JsonParseException("Failed parsing JSON source: " + reader + " to Json", e);
     } finally {
-      reader.setLenient(lenient);
+      reader.setStrictness(strictness);
     }
   }
 

@@ -66,7 +66,7 @@ public final class JsonStreamParser implements Iterator<JsonElement> {
    */
   public JsonStreamParser(Reader reader) {
     parser = new JsonReader(reader);
-    parser.setLenient(true);
+    parser.setStrictness(Strictness.LENIENT);
     lock = new Object();
   }
 

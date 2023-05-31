@@ -33,6 +33,7 @@ public class LeniencyTest {
   private Gson gson;
 
   @Before
+  @SuppressWarnings("deprecation")
   public void setUp() throws Exception {
     gson = new GsonBuilder().setLenient().create();
   }

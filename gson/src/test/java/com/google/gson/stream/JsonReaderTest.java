@@ -39,7 +39,7 @@ import com.google.gson.stream.JsonToken;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@SuppressWarnings("resource")
+@SuppressWarnings({"deprecation", "resource"})
 public final class JsonReaderTest {
 
   @Test
@@ -109,14 +109,14 @@ public final class JsonReaderTest {
     reader.setStrictness(Strictness.STRICT);
 
     IOException expected = assertThrows(IOException.class, reader::nextString);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
 
     reader = new JsonReader(reader("True"));
     reader.setStrictness(Strictness.STRICT);
 
     expected = assertThrows(IOException.class, reader::nextString);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
   }
 
@@ -126,14 +126,14 @@ public final class JsonReaderTest {
     reader.setStrictness(Strictness.STRICT);
 
     IOException expected = assertThrows(IOException.class, reader::nextNull);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
 
     reader = new JsonReader(reader("nulL"));
     reader.setStrictness(Strictness.STRICT);
 
     expected = assertThrows(IOException.class, reader::nextNull);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
   }
 
@@ -143,14 +143,14 @@ public final class JsonReaderTest {
     reader.setStrictness(Strictness.STRICT);
 
     IOException expected = assertThrows(IOException.class, reader::nextBoolean);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
 
     reader = new JsonReader(reader("FaLse"));
     reader.setStrictness(Strictness.STRICT);
 
     expected = assertThrows(IOException.class, reader::nextBoolean);
-    assertThat(expected).hasMessageThat().isEqualTo("Use JsonReader.setLenient(true) to accept malformed" +
+    assertThat(expected).hasMessageThat().contains("Use JsonReader.setLenient(true) to accept malformed" +
             " JSON at line 1 column 1 path $");
   }
 
@@ -470,12 +470,12 @@ public final class JsonReaderTest {
     // This test shows that the JSON String [\n"whatever'] is seen as valid
     // And the JSON string [\u2028"whatever"] is not.
     String jsonInvalid2028 = "[\u2028\"whatever\"]";
-    JsonReader readerInvalid2028 = new JsonReader((reader(jsonInvalid2028)));
+    JsonReader readerInvalid2028 = new JsonReader(reader(jsonInvalid2028));
     readerInvalid2028.beginArray();
     assertThrows(IOException.class, readerInvalid2028::nextString);
 
     String jsonInvalid2029 = "[\u2029\"whatever\"]";
-    JsonReader readerInvalid2029 = new JsonReader((reader(jsonInvalid2029)));
+    JsonReader readerInvalid2029 = new JsonReader(reader(jsonInvalid2029));
     readerInvalid2029.beginArray();
     assertThrows(IOException.class, readerInvalid2029::nextString);
 

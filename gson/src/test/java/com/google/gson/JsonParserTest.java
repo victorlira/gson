@@ -170,7 +170,7 @@ public class JsonParserTest {
     CharArrayReader reader = new CharArrayReader(writer.toCharArray());
 
     JsonReader parser = new JsonReader(reader);
-    parser.setLenient(true);
+    parser.setStrictness(Strictness.LENIENT);
     JsonElement element1 = Streams.parse(parser);
     JsonElement element2 = Streams.parse(parser);
     BagOfPrimitives actualOne = gson.fromJson(element1, BagOfPrimitives.class);

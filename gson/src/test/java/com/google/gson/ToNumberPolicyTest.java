@@ -157,7 +157,7 @@ public class ToNumberPolicyTest {
 
   private static JsonReader fromStringLenient(String json) {
     JsonReader jsonReader = fromString(json);
-    jsonReader.setLenient(true);
+    jsonReader.setStrictness(Strictness.LENIENT);
     return jsonReader;
   }
 }

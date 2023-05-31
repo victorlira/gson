@@ -42,6 +42,7 @@ public final class JsonElementReaderTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testLenientNansAndInfinities() throws IOException {
     JsonElement element = JsonParser.parseString("[NaN, -Infinity, Infinity]");
     JsonTreeReader reader = new JsonTreeReader(element);
@@ -54,6 +55,7 @@ public final class JsonElementReaderTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testStrictNansAndInfinities() throws IOException {
     JsonElement element = JsonParser.parseString("[NaN, -Infinity, Infinity]");
     JsonTreeReader reader = new JsonTreeReader(element);

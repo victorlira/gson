@@ -29,7 +29,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.junit.Test;
 
-@SuppressWarnings("resource")
+@SuppressWarnings({"deprecation", "resource"})
 public final class JsonWriterTest {
 
   @Test

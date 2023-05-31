@@ -307,7 +307,7 @@ public final class GsonTest {
       .generateNonExecutableJson()
       .setPrettyPrinting()
       .serializeNulls()
-      .setLenient()
+      .setStrictness(Strictness.LENIENT)
       .create()
       .newJsonWriter(writer);
     jsonWriter.beginObject();
@@ -340,7 +340,7 @@ public final class GsonTest {
   public void testNewJsonReader_Custom() throws IOException {
     String json = "test"; // String without quotes
     JsonReader jsonReader = new GsonBuilder()
-      .setLenient()
+      .setStrictness(Strictness.LENIENT)
       .create()
       .newJsonReader(new StringReader(json));
     assertThat(jsonReader.nextString()).isEqualTo("test");
